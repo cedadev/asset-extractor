@@ -1,9 +1,17 @@
+"""
+
+"""
+
 import os
 import hashlib
 import boto3
-from core.base_handler import BaseHandler
+from asset_extractor.core.base_handlers import BaseMediaHandler
 
-class ObjectStoreHandler(BaseHandler):
+
+class ObjectStoreHandler(BaseMediaHandler):
+    """
+    Extracts metadata from objects held in object store.
+    """
     
     MEDIA_TYPE = 'Object Store'
 
@@ -17,14 +25,14 @@ class ObjectStoreHandler(BaseHandler):
         except AttributeError:
             pass
 
-    def get_meta_data(self, path, checksum):
+    def get_metadata(self, path, checksum):
         stats = self.client.head_object(
             Bucket='bucketname',
             Key=path
         )
 
         self.info['filepath_type_location'] = path
-        self.extract_id(path)
+        self.generate_id(path)
         self.extract_filename(path)
         self.extract_extension(path)
         self.extract_stat('size', stats, 'ContentLength')
@@ -33,12 +41,6 @@ class ObjectStoreHandler(BaseHandler):
         self.extract_checksum(stats, checksum)
 
         return self.info
-
-    def extract_id(self, path):
-        try:
-            self.info['_id'] = hashlib.md5(path.encode('utf-8')).hexdigest()
-        except:
-            pass
 
     def extract_filename(self, path):
         try:
