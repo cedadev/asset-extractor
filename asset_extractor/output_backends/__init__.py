@@ -14,5 +14,5 @@ __copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
 __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
-from .elasticsearch import ElasticsearchOutputBackend
+from asset_extractor.output_backends.elasticsearch_backend import ElasticsearchOutputBackend
 from .standard_out import StdoutOutputBackend

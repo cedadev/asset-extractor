@@ -6,4 +6,4 @@ Output Plugins
 
 .. automodule:: asset_extractor.output_backends.standard_out
 
-.. automodule:: asset_extractor.output_backends.elasticsearch
+.. automodule:: asset_extractor.output_backends.elasticsearch_backend

@@ -9,9 +9,9 @@ import logging
 
 import magic
 from asset_extractor.core.base_handlers import BaseMediaHandler
+from asset_extractor.core.util import generate_id
 
 from typing import Optional
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -30,7 +30,6 @@ class PosixHandler(BaseMediaHandler):
         stats = os.stat(path)
 
         self.info['filepath_type_location'] = path
-        self.generate_id(path)
         self.extract_filename(path)
         self.extract_extension(path)
         self.extract_stat('size', stats, 'st_size')
@@ -38,7 +37,7 @@ class PosixHandler(BaseMediaHandler):
         self.extract_magic_number(path)
         self.extract_checksum(path, checksum)
 
-        return self.info
+        return {'id': generate_id(path), 'body': self.info}
 
     def extract_stat(self, name: str, stats: os.stat_result, attribute: str) -> None:
         """
@@ -90,9 +89,9 @@ class PosixHandler(BaseMediaHandler):
             checksum = hash_md5.hexdigest()
 
         # Assuming no errors we can now store the checksum
-        self.info['checksum'] = {
-            'time': datetime.now(),
-            'checksum': checksum
-        }
-
-
+        self.info['checksum'] = [
+            {
+                'time': datetime.now(),
+                'checksum': checksum
+            }
+        ]

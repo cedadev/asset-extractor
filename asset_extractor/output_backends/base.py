@@ -13,6 +13,8 @@ from abc import ABC, abstractmethod
 
 class OutputBackend(ABC):
 
+    def __init__(self, **kwargs):
+        pass
 
     @abstractmethod
     def export(self, data, **kwargs):

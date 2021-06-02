@@ -8,10 +8,18 @@ __copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
 __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
+# Local imports
 from asset_extractor.core.exceptions import NoPluginsError
 from asset_extractor.core.handler_pickers import HandlerPicker
-import logging
 
+# Third party imports
+import yaml
+
+# Python imports
+import logging
+import hashlib
+
+# Typing imports
 from typing import List
 
 LOGGER = logging.getLogger(__name__)
@@ -47,3 +55,12 @@ def load_plugins(conf: dict, entry_point: str, conf_section: str) -> List:
         raise NoPluginsError(f'No plugins were successfully loaded from {conf_section}')
 
     return loaded_plugins
+
+
+def generate_id(path):
+    return hashlib.md5(path.encode('utf-8')).hexdigest()
+
+
+def load_yaml(path):
+    with open(path) as reader:
+        return yaml.load(reader)

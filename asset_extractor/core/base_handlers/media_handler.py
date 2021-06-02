@@ -34,9 +34,6 @@ class BaseMediaHandler(BaseHandler):
             'media_type': self.MEDIA_TYPE,
         }
 
-    def generate_id(self, path):
-        self.info['_id'] = hashlib.md5(path.encode('utf-8')).hexdigest()
-
     @abstractmethod
     def get_metadata(self, path: str, checksum: Optional[str] = None) -> dict:
         """
@@ -52,6 +49,15 @@ class BaseMediaHandler(BaseHandler):
         :param checksum: If a checksum is provided here, it will not be calculated.
         This saves compute.
 
-        :return: The extracted metadata
+        :return: The extracted metadata with the format:
+        .. code-block:: json
+
+            {
+                "id": "generated_ID",
+                "body": {}
+            }
+
+        where the body is the extracted metadata.
         """
+
         pass

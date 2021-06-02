@@ -6,13 +6,14 @@ import os
 import hashlib
 import boto3
 from asset_extractor.core.base_handlers import BaseMediaHandler
+from asset_extractor.core.util import generate_id
 
 
 class ObjectStoreHandler(BaseMediaHandler):
     """
     Extracts metadata from objects held in object store.
     """
-    
+
     MEDIA_TYPE = 'Object Store'
 
     def __init__(self):
@@ -21,18 +22,17 @@ class ObjectStoreHandler(BaseMediaHandler):
 
     def extract_stat(self, name, stats, attribute):
         try:
-             self.info[name] = getattr(stats, attribute)
+            self.info[name] = getattr(stats, attribute)
         except AttributeError:
             pass
 
-    def get_metadata(self, path, checksum):
+    def get_metadata(self, path, checksum=None):
         stats = self.client.head_object(
             Bucket='bucketname',
             Key=path
         )
 
         self.info['filepath_type_location'] = path
-        self.generate_id(path)
         self.extract_filename(path)
         self.extract_extension(path)
         self.extract_stat('size', stats, 'ContentLength')
@@ -40,7 +40,7 @@ class ObjectStoreHandler(BaseMediaHandler):
         self.extract_stat('magic_number', stats, 'ContentType')
         self.extract_checksum(stats, checksum)
 
-        return self.info
+        return {'id': generate_id(path), 'body': self.info}
 
     def extract_filename(self, path):
         try:
@@ -57,14 +57,14 @@ class ObjectStoreHandler(BaseMediaHandler):
     def extract_checksum(self, stats, checksum):
         if checksum:
             return {
-                'time':checksum.time,
-                'checksum':checksum.checksum,
+                'time': checksum.time,
+                'checksum': checksum.checksum,
             }
         else:
             try:
                 return {
-                    'time':'now',
-                    'checksum':getattr(stats, 'ETag'),
+                    'time': 'now',
+                    'checksum': getattr(stats, 'ETag'),
                 }
             except AttributeError:
                 pass
