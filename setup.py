@@ -31,6 +31,9 @@ setup(
         'output_backends': [
             'elasticsearch = asset_extractor.output_backends:ElasticsearchOutputBackend',
             'standard_out = asset_extractor.output_backends:StdoutOutputBackend'
+        ],
+        'input_plugins': [
+            'file_system = asset_extractor.input_plugins:FileSystemInputPlugin'
         ]
     }
 )

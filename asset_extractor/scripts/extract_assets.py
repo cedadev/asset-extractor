@@ -10,13 +10,11 @@ USAGE:
     Simple script to work as an example for the asset extractor
 
     positional arguments:
-      URI                   Path to the files to scan. This could be a POSIX
-                            location or a URL to object store
+      conf                  Path to a configuration file to set the input and
+                            output plugin to use.
 
     optional arguments:
       -h, --help            show this help message and exit
-      -s {posix,objectstore}, --source {posix,objectstore}
-                            The source media type.
 
 """
 __author__ = 'Richard Smith'
@@ -31,6 +29,7 @@ import yaml
 
 from asset_extractor.core.handler_pickers import HandlerPicker
 from asset_extractor.core import AssetExtractor
+from asset_extractor.core.util import load_plugins
 
 
 def command_args():
@@ -38,23 +37,18 @@ def command_args():
     Sets the command line arguments and handles their parsing
     :return: command line options
     """
-    parser = argparse.ArgumentParser(description='Simple script to work as an example for the asset extractor')
-
-    parser.add_argument('URI',
-                        help='Path to the files to scan. This could be a POSIX location or a URL to object store')
+    parser = argparse.ArgumentParser(description='Simple script to work run the asset extractor as configured')
     parser.add_argument('conf', help='Path to a yaml configuration file')
-
     args = parser.parse_args()
 
     return args
 
 
 def load_config(path):
-    conf = {}
-
     with open(path) as reader:
         conf = yaml.load(reader)
     return conf
+
 
 def main():
     args = command_args()
@@ -63,10 +57,10 @@ def main():
 
     extractor = AssetExtractor(conf)
 
-    for root, _, files in os.walk(args.URI):
-        for file in files:
-            filename = os.path.abspath(os.path.join(root, file))
-            extractor.process_file(filename, 'posix')
+    input_plugins = load_plugins(conf, 'input_plugins', 'inputs')
+
+    for input in input_plugins:
+        input.run(extractor)
 
 
 if __name__ == '__main__':
