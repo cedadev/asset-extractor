@@ -31,13 +31,10 @@ class AssetExtractor:
                          to the loaded media handlers. Loaded via entry-points
         output_handlers - A list of loaded output handlers, configured using options in
                          the configuration file.
-        input_handlers  - A list of loaded input handlers.
     """
 
     def __init__(self, conf: dict):
         self.conf = conf
-
-        print(conf)
 
         # Load entry points
         self.media_handlers = HandlerPicker('media_handlers')
@@ -52,14 +49,3 @@ class AssetExtractor:
 
         for backend in self.output_handlers:
             backend.export(data)
-
-
-
-def run(conf):
-
-    input_handlers = load_plugins(conf, 'input_plugins', 'inputs')
-
-
-    for input in self.input_handlers:
-        input.run()
-
