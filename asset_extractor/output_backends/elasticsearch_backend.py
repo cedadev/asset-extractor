@@ -28,6 +28,7 @@ from .base import OutputBackend
 from elasticsearch import Elasticsearch
 from asset_extractor.core.util import load_yaml
 
+
 class ElasticsearchOutputBackend(OutputBackend):
     """
     Connects to an elasticsearch instance and exports the
@@ -50,11 +51,6 @@ class ElasticsearchOutputBackend(OutputBackend):
                 mapping = load_yaml(index_conf.get('mapping'))
                 self.es.indices.create(self.index_name, body=mapping)
 
-        # # Put the pipelines, if they don't exist
-        # if self.pipeline_conf:
-        #     p = load_yaml(self.pipeline_conf['location'])
-        #     self.es.ingest.put_pipeline(id=self.pipeline_conf['name'], body=p)
-
     def export(self, data, **kwargs):
 
         index_kwargs = {
@@ -62,9 +58,5 @@ class ElasticsearchOutputBackend(OutputBackend):
             'id': data['id'],
             'body': data['body']
         }
-
-        # Add the pipeline
-        if self.pipeline_conf:
-            index_kwargs['pipeline'] = self.pipeline_conf['name']
 
         self.es.index(**index_kwargs)

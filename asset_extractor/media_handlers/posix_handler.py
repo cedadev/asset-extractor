@@ -33,7 +33,7 @@ class PosixHandler(BaseMediaHandler):
         self.extract_filename(path)
         self.extract_extension(path)
         self.extract_stat('size', stats, 'st_size')
-        self.extract_stat('mtime', stats, 'st_mtime')
+        self.extract_modified_time(stats)
         self.extract_magic_number(path)
         self.extract_checksum(path, checksum)
 
@@ -50,6 +50,12 @@ class PosixHandler(BaseMediaHandler):
         try:
             self.info[name] = getattr(stats, attribute)
         except AttributeError as e:
+            LOGGER.debug(e)
+
+    def extract_modified_time(self, stats: os.stat_result):
+        try:
+            self.info["modified_time"] = datetime.fromtimestamp(stats.st_mtime).isoformat()
+        except Exception as e:
             LOGGER.debug(e)
 
     def extract_filename(self, path: str) -> None:
