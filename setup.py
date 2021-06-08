@@ -19,7 +19,15 @@ setup(
     },
     install_requires=[
         'python-magic',
+        'asset_scanner',
+        'boto3'
     ],
+    extras_require={
+        'docs': [
+            'sphinx',
+            'sphinx-rtd-theme',
+        ]
+    },
     entry_points={
         'asset_extractor.media_handlers': [
             'posix = asset_extractor.media_handlers:PosixHandler',
