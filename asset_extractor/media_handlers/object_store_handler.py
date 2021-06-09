@@ -26,7 +26,7 @@ class ObjectStoreHandler(BaseMediaHandler):
         except AttributeError:
             pass
 
-    def process(self, path, source_media, checksum=None, **kwargs):
+    def run(self, path, source_media, checksum=None, **kwargs):
         stats = self.client.head_object(
             Bucket='bucketname',
             Key=path

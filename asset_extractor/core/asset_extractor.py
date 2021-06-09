@@ -34,9 +34,8 @@ class AssetExtractor(BaseExtractor):
     PROCESSOR_ENTRY_POINT = 'asset_extractor.media_handlers'
 
     def process_file(self, filepath: str, source_media: str, checksum: Optional[str] = None) -> None:
-        processor = self.processors.get_handler(source_media)
+        processor = self.processors.get_processor(source_media)
 
-        data = processor.process(filepath, source_media, checksum)
+        data = processor.run(filepath, source_media, checksum)
 
-        for backend in self.output_plugins:
-            backend.export(data)
+        self.output(data)

@@ -35,7 +35,7 @@ class BaseMediaHandler(BaseProcessor):
         }
 
     @abstractmethod
-    def process(self, filepath: str, source_media: str, checksum: Optional[str] = None, **kwargs) -> dict:
+    def run(self, filepath: str, source_media: str, checksum: Optional[str] = None, **kwargs) -> dict:
         """
         The entry point for the subclasses. This
         takes the path and an optional checksum

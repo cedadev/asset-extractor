@@ -23,7 +23,7 @@ class PosixHandler(BaseMediaHandler):
 
     MEDIA_TYPE = 'POSIX'
 
-    def process(self, path: str, source_media: str, checksum: Optional[str] = None, **kwargs) -> dict:
+    def run(self, path: str, source_media: str, checksum: Optional[str] = None, **kwargs) -> dict:
 
         LOGGER.info(f'Extracting metadata for: {path} with checksum: {checksum}')
 
