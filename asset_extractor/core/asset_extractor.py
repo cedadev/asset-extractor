@@ -26,14 +26,12 @@ class AssetExtractor(BaseExtractor):
 
     Attributes:
         conf           - Loaded configuration dictionary
-        media_handlers - An instance of HandlerPicker which holds reference
+        processors     - An instance of HandlerPicker which holds reference
                          to the loaded media handlers. Loaded via entry-points
-        output_handlers - A list of loaded output handlers, configured using options in
+        output_plugins - A list of loaded output handlers, configured using options in
                          the configuration file.
     """
-
-    def load_processors(self):
-        return HandlerPicker('asset_extractor.media_handlers')
+    PROCESSOR_ENTRY_POINT = 'asset_extractor.media_handlers'
 
     def process_file(self, filepath: str, source_media: str, checksum: Optional[str] = None) -> None:
         processor = self.processors.get_handler(source_media)
