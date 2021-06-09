@@ -8,8 +8,8 @@ from datetime import datetime
 import logging
 
 import magic
-from asset_extractor.core.base_handlers import BaseMediaHandler
-from asset_extractor.core.util import generate_id
+from asset_extractor.core.base_media_handler import BaseMediaHandler
+from asset_scanner.core.utils import generate_id
 
 from typing import Optional
 
@@ -23,7 +23,7 @@ class PosixHandler(BaseMediaHandler):
 
     MEDIA_TYPE = 'POSIX'
 
-    def get_metadata(self, path: str, checksum: Optional[str] = None) -> dict:
+    def run(self, path: str, source_media: str, checksum: Optional[str] = None, **kwargs) -> dict:
 
         LOGGER.info(f'Extracting metadata for: {path} with checksum: {checksum}')
 

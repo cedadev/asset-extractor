@@ -8,15 +8,14 @@ __copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
 __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
+from asset_scanner.core.processor import BaseProcessor
 from abc import ABC, abstractmethod
 import hashlib
 
 from typing import Optional
 
-from .base import BaseHandler
 
-
-class BaseMediaHandler(BaseHandler):
+class BaseMediaHandler(BaseProcessor):
     """
     Defines the interface for other asset extraction handlers.
 
@@ -29,13 +28,14 @@ class BaseMediaHandler(BaseHandler):
 
     MEDIA_TYPE = None
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.info = {
             'media_type': self.MEDIA_TYPE,
         }
 
     @abstractmethod
-    def get_metadata(self, path: str, checksum: Optional[str] = None) -> dict:
+    def run(self, filepath: str, source_media: str, checksum: Optional[str] = None, **kwargs) -> dict:
         """
         The entry point for the subclasses. This
         takes the path and an optional checksum

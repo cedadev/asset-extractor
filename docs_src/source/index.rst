@@ -12,8 +12,6 @@ Asset Extractor
 
    install
    configuration
-   input_plugins
-   output_plugins
 
 .. toctree::
    :maxdepth: 2

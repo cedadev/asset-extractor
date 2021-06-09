@@ -5,8 +5,8 @@
 import os
 import hashlib
 import boto3
-from asset_extractor.core.base_handlers import BaseMediaHandler
-from asset_extractor.core.util import generate_id
+from asset_extractor.core.base_media_handler import BaseMediaHandler
+from asset_scanner.core.utils import generate_id
 
 
 class ObjectStoreHandler(BaseMediaHandler):
@@ -26,7 +26,7 @@ class ObjectStoreHandler(BaseMediaHandler):
         except AttributeError:
             pass
 
-    def get_metadata(self, path, checksum=None):
+    def run(self, path, source_media, checksum=None, **kwargs):
         stats = self.client.head_object(
             Bucket='bucketname',
             Key=path

@@ -8,9 +8,8 @@ __copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
 __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
-from asset_extractor.core.handler_pickers import HandlerPicker
-from asset_extractor.output_backends.base import OutputBackend
-from .util import load_plugins
+from asset_scanner.core import BaseExtractor
+from asset_scanner.core.handler_picker import HandlerPicker
 
 from typing import Optional, List
 import logging
@@ -18,7 +17,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
-class AssetExtractor:
+class AssetExtractor(BaseExtractor):
     """
     The central class for the asset extraction process.
 
@@ -27,25 +26,16 @@ class AssetExtractor:
 
     Attributes:
         conf           - Loaded configuration dictionary
-        media_handlers - An instance of HandlerPicker which holds reference
+        processors     - An instance of HandlerPicker which holds reference
                          to the loaded media handlers. Loaded via entry-points
-        output_handlers - A list of loaded output handlers, configured using options in
+        output_plugins - A list of loaded output handlers, configured using options in
                          the configuration file.
     """
+    PROCESSOR_ENTRY_POINT = 'asset_extractor.media_handlers'
 
-    def __init__(self, conf: dict):
-        self.conf = conf
+    def process_file(self, filepath: str, source_media: str, checksum: Optional[str] = None) -> None:
+        processor = self.processors.get_processor(source_media)
 
-        # Load entry points
-        self.media_handlers = HandlerPicker('media_handlers')
+        data = processor.run(filepath, source_media, checksum)
 
-        # Load output backend
-        self.output_handlers = load_plugins(conf, 'output_backends', 'outputs')
-
-    def process_file(self, path: str, media: str, checksum: Optional[str] = None) -> None:
-        media_handler = self.media_handlers.get_handler(media)
-
-        data = media_handler.get_metadata(path, checksum)
-
-        for backend in self.output_handlers:
-            backend.export(data)
+        self.output(data)

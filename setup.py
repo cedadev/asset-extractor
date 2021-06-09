@@ -19,21 +19,22 @@ setup(
     },
     install_requires=[
         'python-magic',
+        'asset_scanner',
+        'boto3'
     ],
+    extras_require={
+        'docs': [
+            'sphinx',
+            'sphinx-rtd-theme',
+        ]
+    },
     entry_points={
-        'console_scripts': [
-            'extract_assets = asset_extractor.scripts.extract_assets:main',
-        ],
-        'media_handlers': [
+        'asset_extractor.media_handlers': [
             'posix = asset_extractor.media_handlers:PosixHandler',
             'object_store = asset_extractor.media_handlers:ObjectStoreHandler',
         ],
-        'output_backends': [
-            'elasticsearch = asset_extractor.output_backends:ElasticsearchOutputBackend',
-            'standard_out = asset_extractor.output_backends:StdoutOutputBackend'
-        ],
-        'input_plugins': [
-            'file_system = asset_extractor.input_plugins:FileSystemInputPlugin'
+        'asset_scanner.extractors': [
+            'asset_extractor = asset_extractor:AssetExtractor'
         ]
     }
 )
