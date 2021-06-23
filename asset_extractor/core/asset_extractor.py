@@ -24,18 +24,20 @@ class AssetExtractor(BaseExtractor):
     The central class for the asset extraction process.
 
     An instance of the class can be used to atomically process files
-    passed to its `process_file` method.
-
-    Attributes:
-        conf           - Loaded configuration dictionary
-        processors     - An instance of HandlerPicker which holds reference
-                         to the loaded media handlers. Loaded via entry-points
-        output_plugins - A list of loaded output handlers, configured using options in
-                         the configuration file.
+    passed to its ``process_file`` method.
     """
+
     PROCESSOR_ENTRY_POINT = 'asset_extractor.media_handlers'
 
     def get_category(self, string, label, regex):
+        """
+
+        :param string:
+        :param label:
+        :param regex:
+        :return:
+        """
+
         m = re.search(regex, string)
 
         if not m:
@@ -44,6 +46,13 @@ class AssetExtractor(BaseExtractor):
         return label
     
     def get_categories(self, filepath, source_media, category_conf) -> dict:
+        """
+
+        :param filepath:
+        :param source_media:
+        :param category_conf:
+        :return:
+        """
 
         categories = []
 
@@ -55,6 +64,13 @@ class AssetExtractor(BaseExtractor):
         return categories
 
     def process_file(self, filepath: str, source_media: str, checksum: Optional[str] = None) -> None:
+        """
+
+        :param filepath:
+        :param source_media:
+        :param checksum:
+        :return:
+        """
 
         # Get dataset description file
         description = self.item_descriptions.get_description(filepath)

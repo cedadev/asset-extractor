@@ -46,10 +46,10 @@ class BaseMediaHandler(BaseProcessor):
         away other data extracted successfully.
 
         :param path: The path to analyse
-        :param checksum: If a checksum is provided here, it will not be calculated.
-        This saves compute.
+        :param checksum: If a checksum is provided here, it will not be calculated. This saves compute.
 
         :return: The extracted metadata with the format:
+
         .. code-block:: json
 
             {

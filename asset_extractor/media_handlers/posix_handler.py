@@ -24,6 +24,15 @@ class PosixHandler(BaseMediaHandler):
     MEDIA_TYPE = 'POSIX'
 
     def run(self, path: str, source_media: str, checksum: Optional[str] = None, **kwargs) -> dict:
+        """
+
+        :param path:
+        :param source_media:
+        :param checksum:
+        :param kwargs:
+        :return:
+
+        """
 
         LOGGER.info(f'Extracting metadata for: {path} with checksum: {checksum}')
 
@@ -46,6 +55,7 @@ class PosixHandler(BaseMediaHandler):
         :param name: Name of the returned stat
         :param stats: Output from os.stat
         :param attribute: The name of the attribute to return
+
         """
         try:
             self.info[name] = getattr(stats, attribute)

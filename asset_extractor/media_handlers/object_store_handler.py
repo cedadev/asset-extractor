@@ -27,6 +27,16 @@ class ObjectStoreHandler(BaseMediaHandler):
             pass
 
     def run(self, path, source_media, checksum=None, **kwargs):
+        """
+
+        :param path:
+        :param source_media:
+        :param checksum:
+        :param kwargs:
+        :return:
+
+        """
+
         stats = self.client.head_object(
             Bucket='bucketname',
             Key=path

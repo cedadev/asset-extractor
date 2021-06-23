@@ -26,6 +26,7 @@ setup(
         'docs': [
             'sphinx',
             'sphinx-rtd-theme',
+            'sphinxcontrib-programoutput'
         ]
     },
     entry_points={
