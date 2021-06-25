@@ -8,44 +8,79 @@ __copyright__ = 'Copyright 2018 United Kingdom Research and Innovation'
 __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
-from asset_extractor.core.handler_pickers import HandlerPicker
-from asset_extractor.output_backends.base import OutputBackend
-from .util import load_plugins
+from asset_scanner.core import BaseExtractor
+from asset_scanner.core.handler_picker import HandlerPicker
 
+import re
 from typing import Optional, List
 import logging
+
 
 LOGGER = logging.getLogger(__name__)
 
 
-class AssetExtractor:
+class AssetExtractor(BaseExtractor):
     """
     The central class for the asset extraction process.
 
     An instance of the class can be used to atomically process files
-    passed to its `process_file` method.
-
-    Attributes:
-        conf           - Loaded configuration dictionary
-        media_handlers - An instance of HandlerPicker which holds reference
-                         to the loaded media handlers. Loaded via entry-points
-        output_handlers - A list of loaded output handlers, configured using options in
-                         the configuration file.
+    passed to its ``process_file`` method.
     """
 
-    def __init__(self, conf: dict):
-        self.conf = conf
+    PROCESSOR_ENTRY_POINT = 'asset_extractor.media_handlers'
 
-        # Load entry points
-        self.media_handlers = HandlerPicker('media_handlers')
+    def get_category(self, string, label, regex):
+        """
 
-        # Load output backend
-        self.output_handlers = load_plugins(conf, 'output_backends', 'outputs')
+        :param string:
+        :param label:
+        :param regex:
+        :return:
+        """
 
-    def process_file(self, path: str, media: str, checksum: Optional[str] = None) -> None:
-        media_handler = self.media_handlers.get_handler(media)
+        m = re.search(regex, string)
 
-        data = media_handler.get_metadata(path, checksum)
+        if not m:
+            label = 'data'
 
-        for backend in self.output_handlers:
-            backend.export(data)
+        return label
+    
+    def get_categories(self, filepath, source_media, category_conf) -> dict:
+        """
+
+        :param filepath:
+        :param source_media:
+        :param category_conf:
+        :return:
+        """
+
+        categories = []
+
+        for conf in category_conf:
+            label = self.get_category(filepath, **conf)
+            if label:
+                categories.append(label)
+
+        return categories
+
+    def process_file(self, filepath: str, source_media: str, checksum: Optional[str] = None) -> None:
+        """
+
+        :param filepath:
+        :param source_media:
+        :param checksum:
+        :return:
+        """
+
+        # Get dataset description file
+        description = self.item_descriptions.get_description(filepath)
+
+        processor = self.processors.get_processor(source_media)
+
+        data = processor.run(filepath, source_media, checksum)
+        
+        categories = self.get_categories(filepath, source_media, description.categories)
+
+        data['body']['categories'] = categories
+
+        self.output(data)

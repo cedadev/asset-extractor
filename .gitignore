@@ -7,4 +7,4 @@ venv
 test_dir
 docs_venv
 conf
-docs
+docs_src/build

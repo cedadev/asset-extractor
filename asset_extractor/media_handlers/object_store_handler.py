@@ -6,8 +6,8 @@ import os
 from datetime import datetime
 
 import boto3
-from asset_extractor.core.base_handlers import BaseMediaHandler
-from asset_extractor.core.util import generate_id
+from asset_extractor.core.base_media_handler import BaseMediaHandler
+from asset_scanner.core.utils import generate_id
 
 from typing import Optional
 
@@ -25,7 +25,16 @@ class ObjectStoreHandler(BaseMediaHandler):
         self.client = boto3.client(service_name='s3', use_ssl=True)
         super().__init__()
 
-    def get_metadata(self, path: str, checksum: Optional[str] = None) -> dict:
+    def run(self, path, source_media, checksum=None, **kwargs):
+        """
+
+        :param path:
+        :param source_media:
+        :param checksum:
+        :param kwargs:
+        :return:
+
+        """
 
         LOGGER.info(f'Extracting metadata for: {path} with checksum: {checksum}')
 

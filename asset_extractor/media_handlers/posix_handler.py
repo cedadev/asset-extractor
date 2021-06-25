@@ -8,8 +8,8 @@ from datetime import datetime
 import logging
 
 import magic
-from asset_extractor.core.base_handlers import BaseMediaHandler
-from asset_extractor.core.util import generate_id
+from asset_extractor.core.base_media_handler import BaseMediaHandler
+from asset_scanner.core.utils import generate_id
 
 from typing import Optional
 
@@ -23,7 +23,16 @@ class PosixHandler(BaseMediaHandler):
 
     MEDIA_TYPE = 'POSIX'
 
-    def get_metadata(self, path: str, checksum: Optional[str] = None) -> dict:
+    def run(self, path: str, source_media: str, checksum: Optional[str] = None, **kwargs) -> dict:
+        """
+
+        :param path:
+        :param source_media:
+        :param checksum:
+        :param kwargs:
+        :return:
+
+        """
 
         LOGGER.info(f'Extracting metadata for: {path} with checksum: {checksum}')
 
@@ -46,6 +55,7 @@ class PosixHandler(BaseMediaHandler):
         :param name: Name of the returned stat
         :param stats: Output from os.stat
         :param attribute: The name of the attribute to return
+
         """
         try:
             self.info[name] = getattr(stats, attribute)
