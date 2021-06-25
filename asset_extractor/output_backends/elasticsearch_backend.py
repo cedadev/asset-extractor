@@ -51,7 +51,7 @@ class ElasticsearchOutputBackend(OutputBackend):
                 mapping = load_yaml(index_conf.get('mapping'))
                 self.es.indices.create(self.index_name, body=mapping)
 
-    def export(self, data, **kwargs):
+    def export(self, data: dict, **kwargs):
 
         index_kwargs = {
             'index': self.index_name,
