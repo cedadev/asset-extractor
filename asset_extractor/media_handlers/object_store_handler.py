@@ -4,8 +4,12 @@
 
 import os
 from datetime import datetime
+from urllib.parse import urlparse
+from pathlib import Path
+import logging
 
 import boto3
+from botocore.exceptions import ClientError
 from asset_extractor.core.base_media_handler import BaseMediaHandler
 from asset_scanner.core.utils import generate_id
 
@@ -21,11 +25,7 @@ class ObjectStoreHandler(BaseMediaHandler):
 
     MEDIA_TYPE = 'Object Store'
 
-    def __init__(self):
-        self.client = boto3.client(service_name='s3', use_ssl=True)
-        super().__init__()
-
-    def run(self, path, source_media, checksum=None, **kwargs):
+    def run(self, url, source_media, checksum=None, **kwargs):
         """
 
         :param path:
@@ -36,14 +36,33 @@ class ObjectStoreHandler(BaseMediaHandler):
 
         """
 
-        LOGGER.info(f'Extracting metadata for: {path} with checksum: {checksum}')
+        LOGGER.info(f'Extracting metadata for: {url} with checksum: {checksum}')
+        
+        parse = urlparse(url)
+        endpoint_url = f'{parse.scheme}://{parse.netloc}'
+        url_path = Path(parse.path)
+        bucket = url_path.parts[1]
+        path = '/'.join(url_path.parts[2:])
 
-        stats = self.client.head_object(
-            Bucket='bucketname',
-            Key=path
-        )
+        if 'client' in kwargs:
+            s3 = kwargs.get('client')
+        else:
+            session = boto3.session.Session(**kwargs['session_kwargs'])
+            s3 = session.client(
+                's3',
+                endpoint_url=endpoint_url,
+            )
+        
+        try:
+            stats = s3.head_object(
+                Bucket=bucket,
+                Key=path
+            )
+        except ClientError:
+            stats = {}
 
         self.info['filepath_type_location'] = path
+        self.info['time'] = datetime.now()
         self.extract_filename(path)
         self.extract_extension(path)
         self.extract_stat('size', stats, 'ContentLength')
@@ -62,7 +81,7 @@ class ObjectStoreHandler(BaseMediaHandler):
         :param attribute: The name of the attribute to return
         """
         try:
-            self.info[name] = getattr(stats, attribute)
+            self.info[name] = stats.get(attribute)
         except Exception as e:
             LOGGER.debug(e)
 
@@ -74,7 +93,8 @@ class ObjectStoreHandler(BaseMediaHandler):
 
     def extract_extension(self, path: str) -> dict:
         try:
-            self.info['extension'] = os.path.splitext(path)[1]
+            if os.path.splitext(path)[1] != '':
+                self.info['extension'] = os.path.splitext(path)[1]
         except Exception as e:
             LOGGER.debug(e)
 
@@ -85,15 +105,10 @@ class ObjectStoreHandler(BaseMediaHandler):
 
         if not checksum:
             try:
-                checksum =  getattr(stats, 'ETag'),
+                checksum =  stats.get('ETag')
             except Exception as e:
                 LOGGER.debug(e)
                 return
 
         # Assuming no errors we can now store the checksum
-        self.info['checksum'] = [
-            {
-                'time': datetime.now(),
-                'checksum': checksum
-            }
-        ]
+        self.info['checksum'] = checksum
