@@ -27,7 +27,7 @@ class AssetExtractor(BaseExtractor):
     passed to its ``process_file`` method.
     """
 
-    PROCESSOR_ENTRY_POINT = 'asset_extractor.media_handlers'
+    PROCESSOR_ENTRY_POINTS = 'asset_extractor.media_handlers'
 
     def get_category(self, string, label, regex):
         """
