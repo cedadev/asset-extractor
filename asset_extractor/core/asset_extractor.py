@@ -41,7 +41,7 @@ class AssetExtractor(BaseExtractor):
         m = re.search(regex, string)
 
         if not m:
-            label = 'data'
+            label = None
 
         return label
     
@@ -61,7 +61,7 @@ class AssetExtractor(BaseExtractor):
             if label:
                 categories.append(label)
 
-        return categories
+        return categories or ['data']
 
     def process_file(self, filepath: str, source_media: str, checksum: Optional[str] = None) -> None:
         """
