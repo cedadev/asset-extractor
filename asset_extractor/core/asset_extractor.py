@@ -83,4 +83,4 @@ class AssetExtractor(BaseExtractor):
 
         data['body']['categories'] = categories
 
-        self.output(data)
+        self.output(filepath, source_media, data)
