@@ -71,7 +71,7 @@ class PosixHandler(BaseMediaHandler):
     def extract_filename(self, path: str) -> None:
         try:
             self.info['filename'] = os.path.basename(path)
-        except Exceptions as e:
+        except Exception as e:
             LOGGER.debug(e)
 
     def extract_extension(self, path: str) -> None:

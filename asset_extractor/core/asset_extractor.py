@@ -9,10 +9,9 @@ __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 from asset_scanner.core import BaseExtractor
-from asset_scanner.core.handler_picker import HandlerPicker
 
 import re
-from typing import Optional, List
+from typing import Optional
 import logging
 
 
@@ -63,7 +62,7 @@ class AssetExtractor(BaseExtractor):
 
         return categories or ['data']
 
-    def process_file(self, filepath: str, source_media: str, checksum: Optional[str] = None) -> None:
+    def process_file(self, filepath: str, source_media: str, checksum: Optional[str] = None, **kwargs) -> None:
         """
 
         :param filepath:
@@ -72,15 +71,14 @@ class AssetExtractor(BaseExtractor):
         :return:
         """
 
-        # Get dataset description file
-        description = self.item_descriptions.get_description(filepath)
-
         processor = self.processors.get_processor(source_media)
 
-        data = processor.run(filepath, source_media, checksum)
-        
-        categories = self.get_categories(filepath, source_media, description.categories)
+        data = processor.run(filepath, source_media, checksum, **kwargs)
 
-        data['body']['categories'] = categories
+        # Get dataset description file
+        if self.item_descriptions:
+            description = self.item_descriptions.get_description(filepath)
+            categories = self.get_categories(filepath, source_media, description.categories)
+            data['body']['categories'] = categories
 
         self.output(filepath, source_media, data)
