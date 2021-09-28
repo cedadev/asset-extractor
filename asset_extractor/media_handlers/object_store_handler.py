@@ -9,6 +9,8 @@ import logging
 
 import boto3
 from botocore.exceptions import ClientError
+from botocore.config import Config
+from botocore import UNSIGNED
 from asset_extractor.core.base_media_handler import BaseMediaHandler
 from asset_scanner.core.utils import generate_id
 from asset_scanner.types.source_media import StorageType
@@ -42,6 +44,7 @@ class ObjectStoreHandler(BaseMediaHandler):
         super().__init__(**kwargs)
         session_kwargs = getattr(self, 'boto_session_kwargs', {})
         self.session = boto3.session.Session(**session_kwargs)
+        self.anonymous = not session_kwargs
 
     def run(self,
             path,
@@ -69,9 +72,14 @@ class ObjectStoreHandler(BaseMediaHandler):
         bucket = url_path.parts[1]
         object_path = '/'.join(url_path.parts[2:])
 
+        client_kwargs = {}
+        if self.anonymous:
+            client_kwargs['config'] = Config(signature_version=UNSIGNED)
+
         s3 = self.session.client(
             's3',
             endpoint_url=endpoint_url,
+            **client_kwargs
         )
 
         try:
