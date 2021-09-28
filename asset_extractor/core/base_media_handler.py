@@ -9,6 +9,7 @@ __license__ = 'BSD - see LICENSE file in top-level package directory'
 __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 from asset_scanner.core.processor import BaseProcessor
+from asset_scanner.types.source_media import StorageType
 from abc import ABC, abstractmethod
 import hashlib
 
@@ -31,11 +32,15 @@ class BaseMediaHandler(BaseProcessor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.info = {
-            'media_type': self.MEDIA_TYPE,
+            'media_type': self.MEDIA_TYPE.value,
         }
 
     @abstractmethod
-    def run(self, filepath: str, source_media: str, checksum: Optional[str] = None, **kwargs) -> dict:
+    def run(self,
+            filepath: str,
+            source_media: StorageType = StorageType.POSIX,
+            checksum: Optional[str] = None,
+            **kwargs) -> dict:
         """
         The entry point for the subclasses. This
         takes the path and an optional checksum
@@ -45,17 +50,18 @@ class BaseMediaHandler(BaseProcessor):
         when extracting parts of the metadata do not throw
         away other data extracted successfully.
 
-        :param path: The path to analyse
-        :param checksum: If a checksum is provided here, it will not be calculated. This saves compute.
+        :param filepath: The path to analyse
+        :param checksum:
+        :param source_media:
 
         :return: The extracted metadata with the format:
 
-        .. code-block:: json
+            .. code-block:: json
 
-            {
-                "id": "generated_ID",
-                "body": {}
-            }
+                {
+                    "id": "generated_ID",
+                    "body": {}
+                }
 
         where the body is the extracted metadata.
         """

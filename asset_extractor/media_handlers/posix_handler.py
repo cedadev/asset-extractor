@@ -10,6 +10,7 @@ import logging
 import magic
 from asset_extractor.core.base_media_handler import BaseMediaHandler
 from asset_scanner.core.utils import generate_id
+from asset_scanner.types.source_media import StorageType
 
 from typing import Optional
 
@@ -21,9 +22,13 @@ class PosixHandler(BaseMediaHandler):
     Extracts metadata from POSIX based files
     """
 
-    MEDIA_TYPE = 'POSIX'
+    MEDIA_TYPE = StorageType.POSIX
 
-    def run(self, path: str, source_media: str, checksum: Optional[str] = None, **kwargs) -> dict:
+    def run(self,
+            path: str,
+            source_media: StorageType = StorageType.POSIX,
+            checksum: Optional[str] = None,
+            **kwargs) -> dict:
         """
 
         :param path:
@@ -44,7 +49,7 @@ class PosixHandler(BaseMediaHandler):
         self.extract_stat('size', stats, 'st_size')
         self.extract_modified_time(stats)
         self.extract_magic_number(path)
-        self.extract_checksum(path, checksum)
+        # self.extract_checksum(path, checksum)
 
         return {'id': generate_id(path), 'body': self.info}
 

@@ -31,11 +31,11 @@ setup(
     },
     entry_points={
         'asset_extractor.media_handlers': [
-            'posix = asset_extractor.media_handlers:PosixHandler',
-            'object_store = asset_extractor.media_handlers:ObjectStoreHandler',
+            'POSIX = asset_extractor.media_handlers:PosixHandler',
+            'OBJECT_STORE = asset_extractor.media_handlers:ObjectStoreHandler',
         ],
         'asset_scanner.extractors': [
-            'asset_extractor = asset_extractor:AssetExtractor'
+            'asset_extractor = asset_extractor:AssetExtractor',
         ]
     }
 )

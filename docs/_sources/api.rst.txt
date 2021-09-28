@@ -5,8 +5,6 @@ API Reference
 Asset Extractor
 ===============
 
-.. automodule:: asset_extractor.core.asset_extractor
-
 .. autoclass:: asset_extractor.core.asset_extractor.AssetExtractor
 
 Media Handlers

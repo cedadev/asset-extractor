@@ -201,6 +201,9 @@ and is provided in the form of the <a class="reference external" href="https://c
 <td><p>The python import path to the extractor class. If not specified, it picks up the
 class installed with the entry point <code class="docutils literal notranslate"><span class="pre">asset_scanner.extractors</span></code></p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">media_handlers</span></code></p></td>
+<td><p>Kwargs to be passed to the media handlers</p></td>
+</tr>
 </tbody>
 </table>
 <section id="item-description-relevant-fields">
@@ -229,6 +232,17 @@ class installed with the entry point <code class="docutils literal notranslate">
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>The tool is called using the <a class="reference external" href="https://cedadev.github.io/asset-scanner/usage.html">asset-scanner</a></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>usage: asset_scanner [-h] conf
+
+Run the asset scanner as configured
+
+positional arguments:
+  conf        Path to a yaml configuration file
+
+optional arguments:
+  -h, --help  show this help message and exit
+</pre></div>
+</div>
 <p>Example:</p>
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>asset_scanner conf/conf.yml
@@ -239,7 +253,7 @@ class installed with the entry point <code class="docutils literal notranslate">
 <p class="caption"><span class="caption-text">API Reference:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#module-asset_extractor.core.asset_extractor">Asset Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#asset-extractor">Asset Extractor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-asset_extractor.media_handlers">Media Handlers</a></li>
 </ul>
 </li>

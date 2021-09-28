@@ -47,6 +47,8 @@ and is provided in the form of the `item description files <https://cedadev.gith
    * - ``extractor``
      - The python import path to the extractor class. If not specified, it picks up the
        class installed with the entry point ``asset_scanner.extractors``
+   * - ``media_handlers``
+     - Kwargs to be passed to the media handlers
 
 
 Item Description Relevant Fields
