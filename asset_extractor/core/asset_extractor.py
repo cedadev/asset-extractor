@@ -42,43 +42,6 @@ class AssetExtractor(BaseExtractor):
         
         return self.processors.get_processor(name, **processor_kwargs)
 
-    @staticmethod
-    def get_category(string, label, regex):
-        """
-
-        :param string:
-        :param label:
-        :param regex:
-        :return:
-
-        """
-
-        m = re.search(regex, string)
-
-        if not m:
-            label = None
-
-        return label
-    
-    def get_categories(self, filepath, source_media, category_conf) -> dict:
-        """
-
-        :param filepath:
-        :param source_media:
-        :param category_conf:
-        :return:
-
-        """
-
-        categories = []
-
-        for conf in category_conf:
-            label = self.get_category(filepath, **conf)
-            if label:
-                categories.append(label)
-
-        return categories or ['data']
-
     def process_file(self, filepath: str, source_media: StorageType, checksum: Optional[str] = None, **kwargs) -> None:
         """
 
@@ -98,7 +61,7 @@ class AssetExtractor(BaseExtractor):
             description_path = self._get_path(filepath, **kwargs)
 
             description = self.item_descriptions.get_description(description_path)
-            categories = self.get_categories(filepath, source_media, description.categories)
+            categories = self.get_categories(description_path, source_media, description)
             data['body']['categories'] = categories
 
         self.output(filepath, source_media, data)
