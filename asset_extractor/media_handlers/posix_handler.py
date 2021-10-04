@@ -22,7 +22,7 @@ class PosixHandler(BaseMediaHandler):
     Extracts metadata from POSIX based files
     """
 
-    MEDIA_TYPE = StorageType.POSIX
+    MEDIA_TYPE = StorageType.POSIX.value
 
     def run(self,
             path: str,
