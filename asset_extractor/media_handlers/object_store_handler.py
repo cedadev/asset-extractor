@@ -27,14 +27,14 @@ class ObjectStoreHandler(BaseMediaHandler):
     Configuration options:
 
     .. list-table::
-       :header-rows: 1
+        :header-rows: 1
 
-            * - Option
-              - Value Type
-              - Description
-            * - ``session_kwargs``
-              - ``dict``
-              - Parameters passed to `boto3.session.Session <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html#boto3.session.Session>`_
+        * - Option
+          - Value Type
+          - Description
+        * - ``session_kwargs``
+          - ``dict``
+          - Parameters passed to `boto3.session.Session <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html#boto3.session.Session>`_
 
     """
 
