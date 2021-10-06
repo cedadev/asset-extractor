@@ -43,7 +43,7 @@ class PosixHandler(BaseMediaHandler):
 
         stats = os.stat(path)
 
-        self.info['filepath_type_location'] = path
+        self.info['location'] = path
         self.extract_filename(path)
         self.extract_extension(path)
         self.extract_stat('size', stats, 'st_size')

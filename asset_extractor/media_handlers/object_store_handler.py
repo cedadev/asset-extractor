@@ -90,7 +90,7 @@ class ObjectStoreHandler(BaseMediaHandler):
         except ClientError:
             stats = {}
 
-        self.info['filepath_type_location'] = path
+        self.info['location'] = path
         self.extract_filename(object_path)
         self.extract_extension(object_path)
         self.extract_stat('size', stats, 'ContentLength')
