@@ -15,4 +15,4 @@ jobs:
         with:
           repo: cedadev/asset-scanner
           version: latest
-          name: Docs
+          name: docs_build
