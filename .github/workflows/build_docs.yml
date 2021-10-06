@@ -15,5 +15,5 @@ jobs:
         with:
           repo: cedadev/asset-scanner
           version: latest
-          name: docs_build
+          name: Docs
           token: ${{ secrets.GITHUB_TOKEN }}
