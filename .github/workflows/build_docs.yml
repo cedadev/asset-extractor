@@ -1,0 +1,18 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - remote-action
+
+jobs:
+  trigger_remote_docs_build:
+    runs-on: ubuntu-latest
+    name: Trigger remote docs
+    steps:
+      - name: Trigger remote/local Github Action
+        uses: kumarabd/trigger-remote-action@master
+        with:
+          repo: cedadev/asset-scanner
+          version: latest
+          name: Docs
