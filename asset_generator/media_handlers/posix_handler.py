@@ -2,15 +2,21 @@
 POSIX based metadata extraction
 """
 
+# Package imports
+from asset_generator.core.base_media_handler import BaseMediaHandler
+
+# Framework imports
+from asset_scanner.core.utils import generate_id
+from asset_scanner.types.source_media import StorageType
+
+# Third-party imports
+import magic
+
+# Python imports
 import os
 import hashlib
 from datetime import datetime
 import logging
-
-import magic
-from asset_extractor.core.base_media_handler import BaseMediaHandler
-from asset_scanner.core.utils import generate_id
-from asset_scanner.types.source_media import StorageType
 
 from typing import Optional
 

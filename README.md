@@ -1,4 +1,4 @@
-# asset-extractor
-asset-extractor and media handler picker for search futures 
+# asset-generator
+asset-generator and media handler picker for search futures 
 
-[Docs](https://cedadev.github.io/asset-extractor/)
+[Docs](https://cedadev.github.io/asset-generator/)
