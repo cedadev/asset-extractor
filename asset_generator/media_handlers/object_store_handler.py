@@ -1,19 +1,25 @@
 """
 """
 
+# Package imports
+from asset_generator.core.base_media_handler import BaseMediaHandler
+
+# Framework imports
+from asset_scanner.core.utils import generate_id
+from asset_scanner.types.source_media import StorageType
+
+# Third-party imports
+import boto3
+from botocore.exceptions import ClientError
+from botocore.config import Config
+from botocore import UNSIGNED
+
+# Python imports
 import os
 from datetime import datetime
 from urllib.parse import urlparse
 from pathlib import Path
 import logging
-
-import boto3
-from botocore.exceptions import ClientError
-from botocore.config import Config
-from botocore import UNSIGNED
-from asset_extractor.core.base_media_handler import BaseMediaHandler
-from asset_scanner.core.utils import generate_id
-from asset_scanner.types.source_media import StorageType
 
 from typing import Optional
 
@@ -90,7 +96,7 @@ class ObjectStoreHandler(BaseMediaHandler):
         except ClientError:
             stats = {}
 
-        self.info['filepath_type_location'] = path
+        self.info['location'] = path
         self.extract_filename(object_path)
         self.extract_extension(object_path)
         self.extract_stat('size', stats, 'ContentLength')
