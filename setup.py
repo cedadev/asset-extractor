@@ -4,16 +4,16 @@ with open("README.md") as readme_file:
     _long_description = readme_file.read()
 
 setup(
-    name='asset_extractor',
+    name='asset_generator',
     description='Extracts file level metadata',
     author='Rhys Evans',
-    url='https://github.com/cedadev/asset-extractor/',
+    url='https://github.com/cedadev/asset-generator/',
     long_description=_long_description,
     long_description_content_type='text/markdown',
-    license='BSD - See asset_extractor/LICENSE file for details',
+    license='BSD - See asset_generator/LICENSE file for details',
     packages=find_packages(),
     package_data={
-        'asset_extractor': [
+        'asset_generator': [
             'LICENSE'
         ]
     },
@@ -30,12 +30,12 @@ setup(
         ]
     },
     entry_points={
-        'asset_extractor.media_handlers': [
-            'POSIX = asset_extractor.media_handlers:PosixHandler',
-            'OBJECT_STORE = asset_extractor.media_handlers:ObjectStoreHandler',
+        'asset_generator.media_handlers': [
+            'POSIX = asset_generator.media_handlers:PosixHandler',
+            'OBJECT_STORE = asset_generator.media_handlers:ObjectStoreHandler',
         ],
         'asset_scanner.extractors': [
-            'asset_extractor = asset_extractor:AssetExtractor',
+            'asset_generator = asset_generator:AssetExtractor',
         ]
     }
 )
