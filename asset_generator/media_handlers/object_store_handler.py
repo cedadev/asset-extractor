@@ -10,6 +10,7 @@ from asset_scanner.types.source_media import StorageType
 
 # Third-party imports
 import boto3
+import fsspec as fs
 from botocore.exceptions import ClientError
 from botocore.config import Config
 from botocore import UNSIGNED
@@ -72,36 +73,41 @@ class ObjectStoreHandler(BaseMediaHandler):
         uri_parse = kwargs.get('uri_parse')
         if not uri_parse:
             uri_parse = urlparse(path)
-        
+
         endpoint_url = f'{uri_parse.scheme}://{uri_parse.netloc}'
         url_path = Path(uri_parse.path)
         bucket = url_path.parts[1]
         object_path = '/'.join(url_path.parts[2:])
+        protocol = uri_parse.scheme
 
         client_kwargs = {}
         if self.anonymous:
             client_kwargs['config'] = Config(signature_version=UNSIGNED)
 
-        s3 = self.session.client(
-            's3',
-            endpoint_url=endpoint_url,
-            **client_kwargs
-        )
-
-        try:
-            stats = s3.head_object(
-                Bucket=bucket,
-                Key=path
+        if protocol not in ['https', 'http']:
+            file = fs.open(path, anon=True)
+            with file as f:
+                stats = vars(f)
+        else:
+            s3 = self.session.client(
+                's3',
+                endpoint_url=endpoint_url,
+                **client_kwargs
             )
-        except ClientError:
-            stats = {}
+            try:
+                stats = s3.head_object(
+                    Bucket=bucket,
+                    Key=path
+                )
+            except ClientError:
+                stats = {}
 
         self.info['location'] = path
         self.extract_filename(object_path)
         self.extract_extension(object_path)
-        self.extract_stat('size', stats, 'ContentLength')
-        self.extract_stat('mtime', stats, 'LastModified')
-        self.extract_stat('magic_number', stats, 'ContentType')
+        self.extract_stat('size', stats, 'size')
+        self.extract_stat('mtime', stats, 'last_modified')
+        self.extract_stat('magic_number', stats, 'content_type')
         self.extract_checksum(stats, checksum)
 
         return {'id': generate_id(path), 'body': self.info}
@@ -141,7 +147,7 @@ class ObjectStoreHandler(BaseMediaHandler):
 
         if not checksum:
             try:
-                checksum =  stats.get('ETag')
+                checksum = stats.get('ETag')
             except Exception as e:
                 LOGGER.debug(e)
                 return
