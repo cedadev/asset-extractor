@@ -3,6 +3,7 @@
 
 # Package imports
 from asset_generator.core.base_media_handler import BaseMediaHandler
+from asset_generator.core.util import Stats
 
 # Framework imports
 from asset_scanner.core.utils import generate_id
@@ -11,6 +12,7 @@ from asset_scanner.types.source_media import StorageType
 # Third-party imports
 import boto3
 import fsspec as fs
+import s3fs
 from botocore.exceptions import ClientError
 from botocore.config import Config
 from botocore import UNSIGNED
@@ -74,21 +76,16 @@ class ObjectStoreHandler(BaseMediaHandler):
         if not uri_parse:
             uri_parse = urlparse(path)
 
-        endpoint_url = f'{uri_parse.scheme}://{uri_parse.netloc}'
+        endpoint_url = f"{uri_parse.scheme}://{uri_parse.netloc}"
         url_path = Path(uri_parse.path)
         bucket = url_path.parts[1]
         object_path = '/'.join(url_path.parts[2:])
         protocol = uri_parse.scheme
-
         client_kwargs = {}
         if self.anonymous:
             client_kwargs['config'] = Config(signature_version=UNSIGNED)
 
-        if protocol not in ['https', 'http']:
-            file = fs.open(path, anon=True)
-            with file as f:
-                stats = vars(f)
-        else:
+        if protocol in ['https', 'http']:
             s3 = self.session.client(
                 's3',
                 endpoint_url=endpoint_url,
@@ -101,6 +98,13 @@ class ObjectStoreHandler(BaseMediaHandler):
                 )
             except ClientError:
                 stats = {}
+            stats = Stats.from_boto(stats)
+
+        else:
+            file = fs.open(f"{path}",
+                           anon=True)
+            with file as f:
+                stats = vars(f)
 
         self.info['location'] = path
         self.extract_filename(object_path)
