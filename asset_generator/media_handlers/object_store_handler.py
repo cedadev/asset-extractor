@@ -12,7 +12,6 @@ from asset_scanner.types.source_media import StorageType
 # Third-party imports
 import boto3
 import fsspec as fs
-import s3fs
 from botocore.exceptions import ClientError
 from botocore.config import Config
 from botocore import UNSIGNED
