@@ -32,7 +32,7 @@ class AssetExtractor(BaseExtractor):
     passed to its ``process_file`` method.
     """
 
-    PROCESSOR_ENTRY_POINT = 'asset_extractor.media_handlers'
+    PROCESSOR_ENTRY_POINT = 'asset_generator.media_handlers'
 
     @lru_cache(maxsize=3)
     def _load_processor(self, name: StorageType):
