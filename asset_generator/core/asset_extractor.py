@@ -62,10 +62,8 @@ class AssetExtractor(BaseExtractor):
         # Get dataset description file
         if self.item_descriptions:
 
-            description_path = self._get_path(filepath, **kwargs)
-
-            description = self.item_descriptions.get_description(description_path)
-            categories = self.get_categories(description_path, source_media, description)
+            description = self.item_descriptions.get_description(filepath)
+            categories = self.get_categories(filepath, source_media, description)
             data['body']['categories'] = categories
 
         self.output(filepath, source_media, data)
