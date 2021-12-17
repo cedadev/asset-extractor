@@ -1,0 +1,25 @@
+settings:
+  index:
+    analysis:
+      analyzer:
+        path_analyzer:
+          tokenizer: path_tokenizer
+      tokenizer:
+        path_tokenizer:
+          type: path_hierarchy
+mappings:
+  properties:
+    collection_id:
+      type: keyword
+    checksum:
+      properties:
+        checksum:
+          type: keyword
+        time:
+          type: date
+    extension:
+      type: keyword
+      ignore_above: 256
+    filepath_type_location:
+      type: text
+      analyzer: path_analyzer

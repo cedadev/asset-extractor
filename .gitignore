@@ -6,6 +6,7 @@ venv
 .idea
 test_dir
 docs_venv
-conf
+conf/*
+!conf/elasticsearch_mapping.yml
 docs_src/build
 *env*
