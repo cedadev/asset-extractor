@@ -8,3 +8,4 @@ test_dir
 docs_venv
 conf
 docs_src/build
+*env*
