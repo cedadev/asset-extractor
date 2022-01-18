@@ -11,7 +11,10 @@ __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 # Framework imports
 from asset_scanner.core import BaseExtractor
+from asset_scanner.core.item_describer import ItemDescription
+from asset_scanner.core.utils import dict_merge, generate_id
 from asset_scanner.types.source_media import StorageType
+from asset_scanner.plugins.extraction_methods import utils as item_utils
 
 # Python imports
 from functools import lru_cache
@@ -45,6 +48,51 @@ class AssetExtractor(BaseExtractor):
         )
         
         return self.processors.get_processor(name, **processor_kwargs)
+    
+    def get_collection_id(self, description: ItemDescription, filepath: str, storage_media: StorageType) -> str:
+        """Return the collection ID for the file."""
+        collection_id = getattr(description.collections, 'id', 'undefined')
+        return generate_id(collection_id)
+
+    def run_processors(self,
+                       filepath: str,
+                       description: ItemDescription,
+                       source_media: StorageType = StorageType.POSIX,
+                       **kwargs: dict) -> dict:
+        """
+        Extract the raw facets from the file based on the listed processors
+
+        :param filepath: Path to the file
+        :param description: ItemDescription
+        :param source_media: The source media type (POSIX, Object, Tape)
+
+        :return: result from the processing
+        """
+        # Get default tags
+        tags = description.facets.defaults
+
+        # Execute facet extraction functions
+        processors = description.facets.extraction_methods
+
+        for processor in processors:
+
+            metadata = self._run_facet_processor(processor, filepath, source_media)
+
+            # Merge the extracted metadata with the metadata already retrieved
+            if metadata:
+                tags = dict_merge(tags, metadata)
+
+        # Process multi-values
+
+        # Apply mappings
+
+        # Apply overrides
+
+        # Convert to URIs
+
+        # Process URIs to human terms
+
+        return tags
 
     def process_file(self, filepath: str, source_media: StorageType, checksum: Optional[str] = None, **kwargs) -> None:
         """
@@ -65,5 +113,27 @@ class AssetExtractor(BaseExtractor):
             description = self.item_descriptions.get_description(filepath)
             categories = self.get_categories(filepath, source_media, description)
             data['body']['categories'] = categories
+            if 'hidden' in categories:
+                return
 
-        self.output(filepath, source_media, data)
+            processor_output = self.run_processors(filepath, description, source_media, **kwargs)
+            properties = processor_output.get('properties', {})
+
+            # Get collection id
+            coll_id = self.get_collection_id(description, filepath, source_media)
+
+            # Generate item id
+            item_id = item_utils.generate_item_id_from_properties(
+            filepath,
+            coll_id,
+            properties,
+            description
+            )
+        
+        output = {
+            "item": item_id,
+            "properties": properties,
+            "asset": data
+        }
+
+        self.output(filepath, source_media, output)
