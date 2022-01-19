@@ -129,11 +129,8 @@ class AssetExtractor(BaseExtractor):
             properties,
             description
             )
-        
-        output = {
-            "item": item_id,
-            "properties": properties,
-            "asset": data
-        }
 
-        self.output(filepath, source_media, output)
+            data['body']['properties'] = properties
+            data['body']['item_id'] = item_id
+
+        self.output(filepath, source_media, data, namespace="asset")
