@@ -113,9 +113,8 @@ class AssetExtractor(BaseExtractor):
             description = self.item_descriptions.get_description(filepath)
             categories = self.get_categories(filepath, source_media, description)
             data['body']['categories'] = categories
-            if 'hidden' in categories:
-                return
 
+            # Get facet values
             processor_output = self.run_processors(filepath, description, source_media, **kwargs)
             properties = processor_output.get('properties', {})
 
@@ -134,3 +133,10 @@ class AssetExtractor(BaseExtractor):
             data['body']['item_id'] = item_id
 
         self.output(filepath, source_media, data, namespace="asset")
+
+        message_body = {
+            "item_id": item_id,
+            "filepath": filepath
+        }
+
+        self.output(filepath, source_media, message_body, namespace="header")
