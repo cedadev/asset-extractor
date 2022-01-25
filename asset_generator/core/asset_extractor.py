@@ -18,6 +18,7 @@ from asset_scanner.plugins.extraction_methods import utils as item_utils
 
 # Python imports
 from functools import lru_cache
+from cachetools import LRUCache
 import re
 from typing import Optional
 import logging
@@ -37,18 +38,22 @@ class AssetExtractor(BaseExtractor):
 
     PROCESSOR_ENTRY_POINT = 'asset_generator.media_handlers'
 
+    def __init__(self, conf: dict):
+        super().__init__(conf)
+        self.item_id_cache = LRUCache(maxsize=10)
+
     @lru_cache(maxsize=3)
     def _load_processor(self, name: StorageType):
-        
+
         name = name.value
         processor_kwargs = self.conf.get(
             'media_handlers', {}
         ).get(
            name, {} 
         )
-        
+
         return self.processors.get_processor(name, **processor_kwargs)
-    
+
     def get_collection_id(self, description: ItemDescription, filepath: str, storage_media: StorageType) -> str:
         """Return the collection ID for the file."""
         collection_id = getattr(description.collections, 'id', 'undefined')
@@ -133,6 +138,12 @@ class AssetExtractor(BaseExtractor):
             data['body']['item_id'] = item_id
 
         self.output(filepath, source_media, data, namespace="asset")
+
+        # Check if item_id is in the LRU Cache and skip if true.
+        if item_id in list(self.item_id_cache.keys()):
+            return
+        else:
+            self.item_id_cache.update({item_id: None})
 
         message_body = {
             "item_id": item_id,
