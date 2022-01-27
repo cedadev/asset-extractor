@@ -40,7 +40,9 @@ class AssetExtractor(BaseExtractor):
 
     def __init__(self, conf: dict):
         super().__init__(conf)
+        self.header_deduplicate = conf.get('header_deduplication', False)
         self.item_id_cache = LRUCache(maxsize=10)
+
 
     @lru_cache(maxsize=3)
     def _load_processor(self, name: StorageType):
@@ -140,10 +142,11 @@ class AssetExtractor(BaseExtractor):
         self.output(filepath, source_media, data, namespace="asset")
 
         # Check if item_id is in the LRU Cache and skip if true.
-        if item_id in list(self.item_id_cache.keys()):
-            return
-        else:
-            self.item_id_cache.update({item_id: None})
+        if self.header_deduplicate:
+            if item_id in list(self.item_id_cache.keys()):
+                return
+            else:
+                self.item_id_cache.update({item_id: None})
 
         message_body = {
             "item_id": item_id,
