@@ -143,10 +143,9 @@ class AssetExtractor(BaseExtractor):
 
         # Check if item_id is in the LRU Cache and skip if true.
         if self.header_deduplicate:
+            self.item_id_cache.update({item_id: None})
             if item_id in list(self.item_id_cache.keys()):
                 return
-            else:
-                self.item_id_cache.update({item_id: None})
 
         message_body = {
             "item_id": item_id,
