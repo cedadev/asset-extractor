@@ -141,15 +141,24 @@ class AssetExtractor(BaseExtractor):
 
         self.output(filepath, source_media, data, namespace="asset")
 
-        # Check if item_id is in the LRU Cache and skip if true.
-        if self.header_deduplicate:
-            self.item_id_cache.update({item_id: None})
-            if item_id in list(self.item_id_cache.keys()):
-                return
+        # Check to see if coll_id is in the LRU Cache and skip if true.
+        header_kwargs = {}
 
+        # if in LRU cache, update the cache and header_kwargs to add rabbit mq delay
+        # The delay will increase by 5s upto 1 minute if it keeps caching.
+        if item_id in list(self.item_id_cache.keys()):
+            # skip output if header deduplication is true, else add a delay kwarg to header.
+            if self.header_deduplicate:
+                return
+            self.item_id_cache.update({item_id: min(self.item_id_cache.get(item_id) + 5000, 60000)})
+        else:
+            self.item_id_cache.update({item_id: 0})
+
+        header_kwargs['x-delay'] = self.item_id_cache.get(item_id)
         message_body = {
             "item_id": item_id,
-            "filepath": filepath
+            "filepath": filepath,
+            "source_media": source_media
         }
 
-        self.output(filepath, source_media, message_body, namespace="header")
+        self.output(filepath, source_media, message_body, namespace="header", **header_kwargs)
