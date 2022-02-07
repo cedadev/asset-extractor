@@ -47,7 +47,7 @@ class AssetExtractor(BaseExtractor):
             self.delay_max = conf.get('DELAY_MAX', 30000)
 
         self.item_id_cache = TTLCache(
-            maxsize=conf.get('CAHCE_MAX_SIZE', 10),
+            maxsize=conf.get('CACHE_MAX_SIZE', 10),
             ttl=conf.get('CACHE_MAX_AGE', 30)
         )
 
