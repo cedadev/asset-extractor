@@ -27,7 +27,7 @@ setup(
             'sphinx-rtd-theme',
             'sphinxcontrib-programoutput'
         ],
-        's3: [
+        's3': [
            'boto3'
         ]
     },
