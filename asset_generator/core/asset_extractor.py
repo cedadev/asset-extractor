@@ -10,7 +10,7 @@ __contact__ = 'richard.d.smith@stfc.ac.uk'
 
 
 # Framework imports
-from asset_scanner.core import BaseExtractor
+from asset_scanner.core.extractor import BaseExtractor
 from asset_scanner.core.item_describer import ItemDescription
 from asset_scanner.core.utils import dict_merge, generate_id
 from asset_scanner.types.source_media import StorageType
