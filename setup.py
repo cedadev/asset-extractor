@@ -20,13 +20,15 @@ setup(
     install_requires=[
         'python-magic',
         'asset_scanner',
-        'boto3'
     ],
     extras_require={
         'docs': [
             'sphinx',
             'sphinx-rtd-theme',
             'sphinxcontrib-programoutput'
+        ],
+        's3: [
+           'boto3'
         ]
     },
     entry_points={
