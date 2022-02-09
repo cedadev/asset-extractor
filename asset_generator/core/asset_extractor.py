@@ -40,7 +40,7 @@ class AssetExtractor(BaseExtractor):
 
     def __init__(self, conf: dict):
         super().__init__(conf)
-        self.header_deduplicate = conf.get('header_deduplication', False)
+        self.header_deduplication = conf.get('header_deduplication', False)
         self.item_id_cache = TTLCache(
             maxsize=conf.get('CACHE_MAX_SIZE', 10),
             ttl=conf.get('CACHE_MAX_AGE', 30)
@@ -103,7 +103,7 @@ class AssetExtractor(BaseExtractor):
 
         return tags
 
-    def process_file(self, filepath: str, source_media: StorageType, checksum: Optional[str] = None, **kwargs) -> None:
+    def process_file(self, filepath: str, source_media: StorageType = StorageType.POSIX, checksum=None, **kwargs) -> None:
         """
 
         :param filepath:
@@ -153,7 +153,7 @@ class AssetExtractor(BaseExtractor):
         message_body = {
             "item_id": item_id,
             "filepath": filepath,
-            "source_media": source_media
+            "source_media": source_media.value
         }
 
         self.output(filepath, source_media, message_body, namespace="header")
