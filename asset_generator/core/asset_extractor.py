@@ -41,16 +41,10 @@ class AssetExtractor(BaseExtractor):
     def __init__(self, conf: dict):
         super().__init__(conf)
         self.header_deduplicate = conf.get('header_deduplication', False)
-        if self.header_deduplicate:
-            # Get deduplication variables for rabbit mq for `x-delay` in milliseconds
-            self.delay_increment = conf.get('DELAY_INCREMENT', 5000)
-            self.delay_max = conf.get('DELAY_MAX', 30000)
-
         self.item_id_cache = TTLCache(
             maxsize=conf.get('CACHE_MAX_SIZE', 10),
             ttl=conf.get('CACHE_MAX_AGE', 30)
         )
-
 
     @lru_cache(maxsize=3)
     def _load_processor(self, name: StorageType):
@@ -59,7 +53,7 @@ class AssetExtractor(BaseExtractor):
         processor_kwargs = self.conf.get(
             'media_handlers', {}
         ).get(
-           name, {} 
+           name, {}
         )
 
         return self.processors.get_processor(name, **processor_kwargs)
@@ -138,10 +132,10 @@ class AssetExtractor(BaseExtractor):
 
             # Generate item id
             item_id = item_utils.generate_item_id_from_properties(
-            filepath,
-            coll_id,
-            properties,
-            description
+                filepath,
+                coll_id,
+                properties,
+                description
             )
 
             data['body']['properties'] = properties
@@ -150,19 +144,11 @@ class AssetExtractor(BaseExtractor):
         self.output(filepath, source_media, data, namespace="asset")
 
         # Check to see if coll_id is in the LRU Cache and skip if true.
-        header_kwargs = {}
         if self.header_deduplication:
-
-            # if in LRU cache, update the cache and header_kwargs to add rabbit mq delay
-            # The delay will increase by 5s upto 1 minute if it keeps caching.
             if item_id in list(self.item_id_cache.keys()):
-                self.item_id_cache.update(
-                    {item_id: min(self.item_id_cache.get(item_id) + self.delay_increment, self.delay_max)}
-                    )
+                return
             else:
-                self.item_id_cache.update({item_id: 0})
-
-            header_kwargs['x-delay'] = self.item_id_cache.get(item_id)
+                self.item_id_cache.update({item_id: None})
 
         message_body = {
             "item_id": item_id,
@@ -170,4 +156,4 @@ class AssetExtractor(BaseExtractor):
             "source_media": source_media
         }
 
-        self.output(filepath, source_media, message_body, namespace="header", **header_kwargs)
+        self.output(filepath, source_media, message_body, namespace="header")
