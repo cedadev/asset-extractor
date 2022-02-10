@@ -143,17 +143,22 @@ class AssetExtractor(BaseExtractor):
 
         self.output(filepath, source_media, data, namespace="asset")
 
-        # Check to see if coll_id is in the LRU Cache and skip if true.
+        # If deduplication enabled, check LRU cache and pass relevant kwargs
+        kwargs = {
+                    'deduplicate': False,
+                    'id': item_id
+                }
         if self.header_deduplication:
-            if item_id in list(self.item_id_cache.keys()):
-                return
-            else:
-                self.item_id_cache.update({item_id: None})
+            # Check if id is in the cache
+            if self.item_id_cache.get(item_id):
+                kwargs['deduplicate'] = True
+            # add a dummy value to the cache of equal to True.
+            self.item_id_cache.update({item_id: True})
 
-        message_body = {
+        message = {
             "item_id": item_id,
             "filepath": filepath,
             "source_media": source_media.value
         }
 
-        self.output(filepath, source_media, message_body, namespace="header")
+        self.output(filepath, source_media, message, namespace="header", **kwargs)
