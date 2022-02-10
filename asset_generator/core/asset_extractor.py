@@ -149,9 +149,11 @@ class AssetExtractor(BaseExtractor):
                     'id': item_id
                 }
         if self.header_deduplication:
-            if item_id in list(self.item_id_cache.keys()):
+            # Check if id is in the cache
+            if self.item_id_cache.get(item_id):
                 kwargs['deduplicate'] = True
-            self.item_id_cache.update({item_id: None})
+            # add a dummy value to the cache of equal to True.
+            self.item_id_cache.update({item_id: True})
 
         message = {
             "item_id": item_id,
