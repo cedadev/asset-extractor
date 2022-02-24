@@ -35,6 +35,7 @@ setup(
         'asset_generator.media_handlers': [
             'POSIX = asset_generator.media_handlers:PosixHandler',
             'OBJECT_STORE = asset_generator.media_handlers:ObjectStoreHandler',
+            'ESGF_SOLR = asset_generator.media_handlers:ESGFSolrHandler'
         ],
         'asset_scanner.extractors': [
             'asset_generator = asset_generator:AssetExtractor',
