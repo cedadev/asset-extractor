@@ -137,9 +137,10 @@ class AssetExtractor(BaseExtractor):
                 properties,
                 description
             )
-
+            properties = dict_merge(properties, data['body'].get('properties', {}))
             data['body']['properties'] = properties
             data['body']['item_id'] = item_id
+            data['body']['type'] = 'asset'
 
         self.output(filepath, source_media, data, namespace="asset")
 
