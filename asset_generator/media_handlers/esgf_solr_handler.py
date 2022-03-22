@@ -14,6 +14,21 @@ LOGGER = logging.getLogger(__name__)
 
 
 class ESGFSolrHandler(BaseMediaHandler):
+    """
+    Extracts metadata from files held in ESGF Solr.
+
+    Configuration options:
+
+    .. list-table::
+        :header-rows: 1
+
+        * - Option
+          - Value Type
+          - Description
+        * - ```solr_kwargs```
+          - ```dict```
+          - Parameters to pass into the request URL to the Solr index
+    """
 
     MEDIA_TYPE = StorageType.ESGF_SOLR
 
@@ -89,7 +104,10 @@ class ESGFSolrHandler(BaseMediaHandler):
             '_version_'
         ]
         for key in keys:
-            metadata.pop(key)
+            try:
+                metadata.pop(key)
+            except KeyError:
+                pass
 
     @lru_cache(maxsize=3)
     def get_item_metadata(self, dataset_id) -> dict:
@@ -109,16 +127,22 @@ class ESGFSolrHandler(BaseMediaHandler):
             'master_id',
             'url'
         ]
-        for key in dataset_exclusive_keys:
-            self.info['properties'][key] = item_metadata[key]
 
-        bbox = [
-            item_metadata['south_degrees'],
-            item_metadata['west_degrees'],
-            item_metadata['north_degrees'],
-            item_metadata['east_degrees']
-        ]
-        self.info['properties']['bbox'] = str(bbox)
+        for key in dataset_exclusive_keys:
+            try:
+                self.info['properties'][key] = item_metadata[key]
+            except KeyError:
+                pass
+        try:
+            bbox = [
+                item_metadata['south_degrees'],
+                item_metadata['west_degrees'],
+                item_metadata['north_degrees'],
+                item_metadata['east_degrees']
+            ]
+            self.info['properties']['bbox'] = str(bbox)
+        except KeyError:
+            pass
 
     def run(self,
             path,
@@ -128,6 +152,8 @@ class ESGFSolrHandler(BaseMediaHandler):
 
         # Transform the path back to ID form
         path = path.replace('/', '.')
+
+        LOGGER.info(f"Extracting metadata for: {path}")
 
         metadata = self.get_metadata(path, self.index, self.core)
         self.info = {
