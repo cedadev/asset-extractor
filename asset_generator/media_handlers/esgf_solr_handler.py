@@ -1,7 +1,16 @@
-from base64 import urlsafe_b64decode
+# encoding: utf-8
+"""
+
+"""
+__author__ = "Mahir Rahman"
+__date__ = "23 Mar 2022"
+__copyright__ = "Copyright 2022 United Kingdom Research and Innovation"
+__license__ = "BSD - see LICENSE file in top-level package directory"
+__contact__ = "kazi.mahir@stfc.ac.uk"
+
 from typing import Optional
 from asset_generator.core.base_media_handler import BaseMediaHandler
-from asset_scanner.core.utils import generate_id, dict_merge
+from asset_scanner.core.utils import generate_id
 from asset_scanner.types.source_media import StorageType
 
 from functools import lru_cache
@@ -40,11 +49,18 @@ class ESGFSolrHandler(BaseMediaHandler):
 
     @staticmethod
     def format_item(solr_item):
+        """
+        Solr returns metadata as lists, convert the single item
+        list to item.
+        """
         if type(solr_item) == list and len(solr_item) == 1:
             return solr_item[0]
         return solr_item
 
     def get_metadata(self, path, index, core):
+        """
+        Send a request to Solr to get metadata from path id.
+        """
         url = f"http://{index}/solr/{core}/select"
         search_params = {
             'indent': 'on',
@@ -83,12 +99,16 @@ class ESGFSolrHandler(BaseMediaHandler):
     def extract_url(self, metadata: dict):
         urls = metadata.pop('url')
         self.info['location'] = urls
-        hrefs = {method: url for (url, _, method) in [link.split('|') for link in urls]}
-   
+        hrefs = {
+            method: url for (url, _, method) in [
+                link.split('|') for link in urls
+                ]
+            }
+
         self.info['href'] = hrefs.pop('HTTPServer')
         for method, url in hrefs.items():
             self.info[f'{method}_url'] = url
-    
+
     def extract_ids(self, metadata: dict):
         self.info['master_id'] = metadata.pop('master_id')
         self.info['instance_id'] = metadata.pop('instance_id')
@@ -96,6 +116,9 @@ class ESGFSolrHandler(BaseMediaHandler):
 
     @staticmethod
     def remove_fields(metadata: dict):
+        """
+        Remove metadata that are not mapped to STAC
+        """
         keys = [
             'type',
             'version',
@@ -111,6 +134,9 @@ class ESGFSolrHandler(BaseMediaHandler):
 
     @lru_cache(maxsize=3)
     def get_item_metadata(self, dataset_id) -> dict:
+        """
+        Get additional metadata exclusive to the dataset level of the file.
+        """
         metadata = self.get_metadata(dataset_id, self.index, 'datasets')
         return metadata
 
@@ -133,6 +159,8 @@ class ESGFSolrHandler(BaseMediaHandler):
                 self.info['properties'][key] = item_metadata[key]
             except KeyError:
                 pass
+
+        # If there is geometry data, extract and reformat into bbox
         try:
             bbox = [
                 item_metadata['south_degrees'],
