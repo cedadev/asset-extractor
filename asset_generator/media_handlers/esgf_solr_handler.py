@@ -162,13 +162,13 @@ class ESGFSolrHandler(BaseMediaHandler):
 
         # If there is geometry data, extract and reformat into bbox
         try:
-            bbox = [
-                item_metadata['south_degrees'],
-                item_metadata['west_degrees'],
-                item_metadata['north_degrees'],
-                item_metadata['east_degrees']
-            ]
-            self.info['properties']['bbox'] = str(bbox)
+            bbox = dict(
+                min_lat=item_metadata['south_degrees'],
+                max_lon=item_metadata['west_degrees'],
+                max_lat=item_metadata['north_degrees'],
+                min_lon=item_metadata['east_degrees'],
+            )
+            self.info['properties'].update(bbox)
         except KeyError:
             pass
 
