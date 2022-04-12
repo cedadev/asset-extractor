@@ -160,7 +160,7 @@ class ESGFSolrHandler(BaseMediaHandler):
             except KeyError:
                 pass
 
-        # If there is geometry data, extract and reformat into bbox
+        # If ALL geometry data is present, add to properties.
         try:
             bbox = dict(
                 min_lat=item_metadata['south_degrees'],
