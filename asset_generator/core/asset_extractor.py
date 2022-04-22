@@ -103,6 +103,30 @@ class AssetExtractor(BaseExtractor):
 
         return tags
 
+    def run_post_extraction_methods(self,
+                                    data: dict,
+                                    description: ItemDescription,
+                                    source_media: StorageType = StorageType.POSIX,
+                                    **kwargs: dict) -> dict:
+        """
+        Extract the raw facets from the file based on the listed processors
+
+        :param filepath: Path to the file
+        :param description: ItemDescription
+        :param source_media: The source media type (POSIX, Object, Tape)
+
+        :return: result from the processing
+        """
+
+        # Execute facet extraction functions
+        post_extraction_methods = description.facets.post_extraction_methods
+
+        for post_extraction_method in post_extraction_methods:
+
+            data = self._run_post_extraction_method(post_extraction_method, data, source_media)
+
+        return data
+
     def process_file(self, filepath: str, source_media: StorageType = StorageType.POSIX, checksum=None, **kwargs) -> None:
         """
 
@@ -118,6 +142,8 @@ class AssetExtractor(BaseExtractor):
 
         # Get dataset description file
         if self.item_descriptions:
+
+            data['body']['type'] = 'asset'
 
             description = self.item_descriptions.get_description(filepath)
             categories = self.get_categories(filepath, source_media, description)
@@ -137,10 +163,13 @@ class AssetExtractor(BaseExtractor):
                 properties,
                 description
             )
+
             properties = dict_merge(properties, data['body'].get('properties', {}))
+
             data['body']['properties'] = properties
             data['body']['item_id'] = item_id
-            data['body']['type'] = 'asset'
+
+            data = self.run_post_extraction_methods(data, description, source_media, **kwargs) 
 
         self.output(filepath, source_media, data, namespace="asset")
 
