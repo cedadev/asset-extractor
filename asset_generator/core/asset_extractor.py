@@ -113,7 +113,7 @@ class AssetExtractor(BaseExtractor):
 
         """
         processor = self._load_processor(source_media)
-
+        # get asset values from media handler
         data = processor.run(filepath, source_media, checksum, **kwargs)
 
         # Get dataset description file
@@ -123,7 +123,7 @@ class AssetExtractor(BaseExtractor):
             categories = self.get_categories(filepath, source_media, description)
             data['body']['categories'] = categories
 
-            # Get facet values
+            # Get facet values from extraction methods
             processor_output = self.run_processors(filepath, description, source_media, **kwargs)
             properties = processor_output.get('properties', {})
 
