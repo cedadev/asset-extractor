@@ -70,6 +70,7 @@ class ObjectStoreHandler(BaseMediaHandler):
         """
 
         LOGGER.info(f'Extracting metadata for: {path} with checksum: {checksum}')
+        self.info = {}
 
         uri_parse = kwargs.get('uri_parse')
         if not uri_parse:
