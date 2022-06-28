@@ -119,17 +119,11 @@ class AssetExtractor(BaseExtractor):
         """
 
         # Execute facet extraction functions
-        if "post_extraction_methods" in description.facets:
-            post_extraction_methods = description.facets.post_extraction_methods
+        for post_extraction_method in description.facets.post_extraction_methods:
 
-            for post_extraction_method in post_extraction_methods:
+            data = self._run_post_extraction_method(post_extraction_method, data, source_media)
 
-                data = self._run_post_extraction_method(post_extraction_method, data, source_media)
-
-            return data
-
-        else:
-            return data
+        return data
 
     def process_file(self, filepath: str, source_media: StorageType = StorageType.POSIX, checksum=None, **kwargs) -> None:
         """
