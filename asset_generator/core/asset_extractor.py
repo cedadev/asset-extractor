@@ -135,7 +135,7 @@ class AssetExtractor(BaseExtractor):
 
         """
         processor = self._load_processor(source_media)
-
+        # get asset values from media handler
         data = processor.run(filepath, source_media, checksum, **kwargs)
 
         # Get dataset description file
@@ -147,7 +147,7 @@ class AssetExtractor(BaseExtractor):
             categories = self.get_categories(filepath, source_media, description)
             data['body']['categories'] = categories
 
-            # Get facet values
+            # Get facet values from extraction methods
             processor_output = self.run_processors(filepath, description, source_media, **kwargs)
             properties = processor_output.get('properties', {})
 
@@ -162,8 +162,7 @@ class AssetExtractor(BaseExtractor):
                 description
             )
 
-            properties = dict_merge(properties, data['body'].get('properties', {}))
-
+            properties = dict_merge(data['body'].get('properties', {}), properties)
             data['body']['properties'] = properties
             data['body']['item_id'] = item_id
 
